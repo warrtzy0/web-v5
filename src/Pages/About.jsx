@@ -1,5 +1,6 @@
-import React, { useEffect, memo, useMemo } from "react"
+import React, { useEffect, memo, useMemo, useState } from "react"
 import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles } from "lucide-react"
+import { supabase } from "../supabase.js"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -108,9 +109,11 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 ));
 
 const AboutPage = () => {
-  const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
-    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-    const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalCertificates, setTotalCertificates] = useState(0);
+  const { YearExperience } = useMemo(() => {
+    
+    
     
     const startDate = new Date("2024-01-01");
     const today = new Date();
@@ -118,8 +121,8 @@ const AboutPage = () => {
       (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
 
     return {
-      totalProjects: storedProjects.length,
-      totalCertificates: storedCertificates.length,
+      
+      
       YearExperience: experience
     };
   }, []);
@@ -127,6 +130,16 @@ const AboutPage = () => {
   useEffect(() => {
     const initAOS = () => {
       AOS.init({ once: false });
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const { count: pCount } = await supabase.from("projects").select("*", { count: "exact", head: true });
+      const { count: cCount } = await supabase.from("certificates").select("*", { count: "exact", head: true });
+      setTotalProjects(pCount || 0);
+      setTotalCertificates(cCount || 0);
+    };
+    fetchCounts();
+  }, []);
     };
 
     initAOS();
