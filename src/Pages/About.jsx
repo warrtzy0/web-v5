@@ -131,15 +131,6 @@ const AboutPage = () => {
     const initAOS = () => {
       AOS.init({ once: false });
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const { count: pCount } = await supabase.from("projects").select("*", { count: "exact", head: true });
-      const { count: cCount } = await supabase.from("certificates").select("*", { count: "exact", head: true });
-      setTotalProjects(pCount || 0);
-      setTotalCertificates(cCount || 0);
-    };
-    fetchCounts();
-  }, []);
     };
 
     initAOS();
@@ -155,6 +146,16 @@ const AboutPage = () => {
       window.removeEventListener('resize', handleResize);
       clearTimeout(resizeTimer);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const { count: pCount } = await supabase.from("projects").select("*", { count: "exact", head: true });
+      const { count: cCount } = await supabase.from("certificates").select("*", { count: "exact", head: true });
+      setTotalProjects(pCount || 0);
+      setTotalCertificates(cCount || 0);
+    };
+    fetchCounts();
   }, []);
 
   const statsData = useMemo(() => [
